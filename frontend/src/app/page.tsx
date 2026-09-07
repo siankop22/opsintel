@@ -27,6 +27,8 @@ type InvestigationResult = {
   answer: string;
   tool_calls: ToolCall[];
   session_id: string;
+  latency_ms: number;
+  tool_call_count: number;
 };
 
 export default function Home() {
@@ -194,6 +196,16 @@ export default function Home() {
               <h2 className="text-xl font-semibold">
                 Investigation Result
               </h2>
+
+              <div className="mt-4 flex gap-4 text-sm text-zinc-500">
+                <span>
+                  Latency: {(result.latency_ms / 1000).toFixed(2)}s
+                </span>
+
+                <span>
+                  Tool calls: {result.tool_call_count}
+                </span>
+              </div>
 
               <div className="mt-4 space-y-4 leading-7 text-zinc-300">
                 <ReactMarkdown>
