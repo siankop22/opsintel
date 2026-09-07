@@ -1,12 +1,11 @@
 from functools import lru_cache
-from sentence_transformers import CrossEncoder
-
 
 MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 
 @lru_cache
 def get_reranker():
+    from sentence_transformers import CrossEncoder
     return CrossEncoder(MODEL_NAME)
 
 
