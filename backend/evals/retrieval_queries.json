@@ -4,11 +4,49 @@
     "expected_title": "NYC-02 Packing Station Incident"
   },
   {
-    "query": "How many workers were missing from the afternoon shift?",
+    "query": "What equipment failure affected packing stations 12 through 16?",
+    "expected_title": "NYC-02 Packing Station Incident"
+  },
+  {
+    "query": "What caused the operational disruption between 2 PM and 5 PM?",
+    "expected_title": "NYC-02 Packing Station Incident"
+  },
+  {
+    "query": "How was the packing station problem fixed?",
+    "expected_title": "NYC-02 Packing Station Incident"
+  },
+
+  {
+    "query": "How many workers were missing from the shift?",
     "expected_title": "NYC-02 Staffing Report"
   },
   {
+    "query": "How many employees were scheduled and how many reported to work?",
+    "expected_title": "NYC-02 Staffing Report"
+  },
+  {
+    "query": "Was the packing team understaffed on September 4?",
+    "expected_title": "NYC-02 Staffing Report"
+  },
+  {
+    "query": "What workforce shortage affected packing operations?",
+    "expected_title": "NYC-02 Staffing Report"
+  },
+
+  {
     "query": "What happened to throughput between 2 PM and 5 PM?",
+    "expected_title": "NYC-02 Throughput Report"
+  },
+  {
+    "query": "How did September 4 throughput compare with the weekly average?",
+    "expected_title": "NYC-02 Throughput Report"
+  },
+  {
+    "query": "When did production performance return to normal?",
+    "expected_title": "NYC-02 Throughput Report"
+  },
+  {
+    "query": "What was the units-per-hour performance during the afternoon slowdown?",
     "expected_title": "NYC-02 Throughput Report"
   }
 ]
