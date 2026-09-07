@@ -36,11 +36,7 @@ export default function Home() {
     "Investigate why NYC-02 throughput dropped on September 4."
   );
 
-  const [sessionId] = useState(() => {
-    if (typeof window === "undefined") {
-      return "";
-    }
-
+  function getSessionId() {
     let storedSession = localStorage.getItem("opsintel_session_id");
 
     if (!storedSession) {
@@ -49,12 +45,14 @@ export default function Home() {
     }
 
     return storedSession;
-  });
+  }
 
   const [result, setResult] = useState<InvestigationResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function runInvestigation() {
+    const sessionId = getSessionId();
+
     setLoading(true);
     setResult(null);
 
@@ -183,7 +181,7 @@ export default function Home() {
 
           <button
             onClick={runInvestigation}
-            disabled={loading || !sessionId}
+            disabled={loading}
             className="mt-4 rounded-xl bg-white px-5 py-3 font-medium text-black disabled:opacity-50"
           >
             {loading ? "Investigating..." : "Run Investigation"}
