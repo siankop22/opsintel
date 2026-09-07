@@ -243,3 +243,21 @@ They are not real company records and do not contain confidential Amazon or empl
 ## Project Purpose
 
 OpsIntel demonstrates practical experience with full-stack AI engineering, retrieval-augmented generation, structured and unstructured data, agentic tool orchestration, persistent memory, APIs, testing, and CI.
+
+## Retrieval Evaluation
+
+OpsIntel includes a small synthetic retrieval benchmark with 12 operational investigation questions.
+
+| Method | Top-1 Accuracy | MRR@3 |
+|---|---:|---:|
+| Vector Search | 91.7% | 0.958 |
+| BM25 | 75.0% | 0.861 |
+| Hybrid Retrieval | 91.7% | 0.944 |
+| Hybrid + Cross-Encoder Reranker | 91.7% | 0.958 |
+
+The benchmark is intentionally small and uses synthetic demonstration data, so these results should be treated as development metrics rather than production-scale performance claims.
+
+Run the benchmark with:
+
+    cd backend
+    python -m evals.run_retrieval_eval
