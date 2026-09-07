@@ -1,4 +1,5 @@
 import json
+import time
 
 from openai import OpenAI
 
@@ -67,6 +68,7 @@ Once you have enough evidence, stop using tools and provide the final answer.
 
 
 def investigate(question: str, session_id: str = "default"):
+    start_time = time.perf_counter()
     history = get_history(session_id)
 
     save_message(
@@ -106,10 +108,17 @@ def investigate(question: str, session_id: str = "default"):
                 answer,
             )
 
+            elapsed_ms = round(
+                (time.perf_counter() - start_time) * 1000,
+                2,
+            )
+
             return {
                 "answer": answer,
                 "tool_calls": tool_log,
                 "session_id": session_id,
+                "latency_ms": elapsed_ms,
+                "tool_call_count": len(tool_log),
             }
 
         tool_outputs = []
