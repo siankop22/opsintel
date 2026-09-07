@@ -60,10 +60,12 @@ def get_history(
             .filter(
                 InvestigationMessage.session_id == session_id
             )
-            .order_by(InvestigationMessage.id.asc())
+            .order_by(InvestigationMessage.id.desc())
             .limit(limit)
             .all()
         )
+
+        rows.reverse()
 
         return [
             {
