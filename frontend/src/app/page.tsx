@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 type DocumentResult = {
@@ -34,11 +34,11 @@ export default function Home() {
     "Investigate why NYC-02 throughput dropped on September 4."
   );
 
-  const [sessionId, setSessionId] = useState("");
-  const [result, setResult] = useState<InvestigationResult | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [sessionId] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
 
-  useEffect(() => {
     let storedSession = localStorage.getItem("opsintel_session_id");
 
     if (!storedSession) {
@@ -46,8 +46,11 @@ export default function Home() {
       localStorage.setItem("opsintel_session_id", storedSession);
     }
 
-    setSessionId(storedSession);
-  }, []);
+    return storedSession;
+  });
+
+  const [result, setResult] = useState<InvestigationResult | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function runInvestigation() {
     setLoading(true);
