@@ -1,0 +1,14 @@
+[
+  {
+    "query": "Why did packing capacity drop on September 4?",
+    "expected_title": "NYC-02 Packing Station Incident"
+  },
+  {
+    "query": "How many workers were missing from the afternoon shift?",
+    "expected_title": "NYC-02 Staffing Report"
+  },
+  {
+    "query": "What happened to throughput between 2 PM and 5 PM?",
+    "expected_title": "NYC-02 Throughput Report"
+  }
+]
