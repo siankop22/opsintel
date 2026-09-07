@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.search import router as search_router
 from app.api.ask import router as ask_router
@@ -8,6 +9,15 @@ from app.api.investigate import router as investigate_router
 app = FastAPI(
     title="OpsIntel API",
     version="0.1.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

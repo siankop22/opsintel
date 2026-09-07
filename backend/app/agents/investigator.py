@@ -3,6 +3,8 @@ import json
 from openai import OpenAI
 
 from app.agents.tools import search_documents
+from app.agents.sql_tool import query_operations
+from app.agents.memory import save_message, get_history
 from app.core.config import settings
 
 
@@ -13,7 +15,7 @@ TOOLS = [
     {
         "type": "function",
         "name": "search_documents",
-        "description": "Search internal operations documents for evidence.",
+        "description": "Search internal operations documents for incidents, staffing reports, and other written evidence.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -24,14 +26,35 @@ TOOLS = [
             "required": ["query"],
             "additionalProperties": False,
         },
-    }
+    },
+    {
+        "type": "function",
+        "name": "query_operations",
+        "description": "Query structured operational metrics such as throughput, staffing, and downtime for a site.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "site": {
+                    "type": "string"
+                }
+            },
+            "required": ["site"],
+            "additionalProperties": False,
+        },
+    },
 ]
 
 
 INSTRUCTIONS = """
 You are OpsIntel, an enterprise operations investigation agent.
 
-Use available tools to gather evidence before answering.
+Use the available tools to gather evidence before answering.
+
+Use search_documents for written reports and incident evidence.
+Use query_operations for structured metrics such as throughput,
+staffing, and downtime.
+
+When useful, use both tools.
 
 Give a concise response with:
 - Finding
@@ -39,21 +62,35 @@ Give a concise response with:
 - Likely cause
 - Recommended action
 
-Once you have enough evidence, stop searching and provide the final answer.
+Once you have enough evidence, stop using tools and provide the final answer.
 """
 
 
-def investigate(question: str):
+def investigate(question: str, session_id: str = "default"):
+    history = get_history(session_id)
+
+    save_message(
+        session_id,
+        "user",
+        question,
+    )
+
+    conversation = history + [
+        {
+            "role": "user",
+            "content": question,
+        }
+    ]
     response = client.responses.create(
         model=settings.openai_model,
         instructions=INSTRUCTIONS,
-        input=question,
+        input=conversation,
         tools=TOOLS,
     )
 
     tool_log = []
 
-    for _ in range(5):
+    for _ in range(6):
         function_calls = [
             item
             for item in response.output
@@ -61,32 +98,53 @@ def investigate(question: str):
         ]
 
         if not function_calls:
+            answer = response.output_text
+
+            save_message(
+                session_id,
+                "assistant",
+                answer,
+            )
+
             return {
-                "answer": response.output_text,
+                "answer": answer,
                 "tool_calls": tool_log,
+                "session_id": session_id,
             }
 
         tool_outputs = []
 
         for item in function_calls:
-            if item.name == "search_documents":
-                arguments = json.loads(item.arguments)
+            arguments = json.loads(item.arguments)
 
-                results = search_documents(
+            if item.name == "search_documents":
+                result = search_documents(
                     arguments["query"]
                 )
 
-                tool_log.append({
-                    "tool": item.name,
-                    "arguments": arguments,
-                    "results": results,
-                })
+            elif item.name == "query_operations":
+                result = query_operations(
+                    arguments["site"]
+                )
 
-                tool_outputs.append({
-                    "type": "function_call_output",
-                    "call_id": item.call_id,
-                    "output": json.dumps(results),
-                })
+                for row in result:
+                    if "timestamp" in row:
+                        row["timestamp"] = row["timestamp"].isoformat()
+
+            else:
+                continue
+
+            tool_log.append({
+                "tool": item.name,
+                "arguments": arguments,
+                "results": result,
+            })
+
+            tool_outputs.append({
+                "type": "function_call_output",
+                "call_id": item.call_id,
+                "output": json.dumps(result),
+            })
 
         response = client.responses.create(
             model=settings.openai_model,
